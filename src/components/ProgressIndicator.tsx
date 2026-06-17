@@ -1,9 +1,10 @@
 import { useGameStore } from '@/store/gameStore';
-import { TOTAL_QUESTIONS } from '@/services/questionService';
+import { GAME_CONFIG } from '@/data/gameConfig';
 import { Check, Circle } from 'lucide-react';
 
 export function ProgressIndicator() {
   const { currentQuestionIndex, answers } = useGameStore();
+  const TOTAL_QUESTIONS = GAME_CONFIG.TOTAL_QUESTIONS;
 
   return (
     <div className="flex items-center justify-center gap-2 flex-wrap">

@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { QuestionOption } from '@/types';
+import { GAME_CONFIG } from '@/data/gameConfig';
 import { Check, X } from 'lucide-react';
 
 interface OptionButtonProps {
@@ -21,7 +22,10 @@ export function OptionButton({
   isSelected,
   onClick,
 }: OptionButtonProps) {
-  const letterLabels = ['A', 'B', 'C', 'D'];
+  const letterLabels = Array.from(
+    { length: GAME_CONFIG.OPTIONS_PER_QUESTION },
+    (_, i) => String.fromCharCode(65 + i)
+  );
 
   const baseClasses =
     'group relative w-full px-6 py-5 rounded-2xl text-left transition-all duration-300 transform active:scale-[0.97]';

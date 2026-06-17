@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
-import { summarizeResults, TIME_BONUS_SCORE } from '@/services/scoreService';
+import { summarizeResults } from '@/services/scoreService';
+import { GAME_CONFIG } from '@/data/gameConfig';
 import { TrafficSignCanvas } from '@/components/TrafficSignCanvas';
 import {
   Trophy,
@@ -16,11 +17,12 @@ import {
   Star,
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { TOTAL_QUESTIONS } from '@/services/questionService';
 
 export function ResultPage() {
   const navigate = useNavigate();
   const { answers, resetGame, startGame } = useGameStore();
+  const TOTAL_QUESTIONS = GAME_CONFIG.TOTAL_QUESTIONS;
+  const TIME_BONUS_SCORE = GAME_CONFIG.TIME_BONUS_SCORE;
 
   const summary = useMemo(() => summarizeResults(answers), [answers]);
 

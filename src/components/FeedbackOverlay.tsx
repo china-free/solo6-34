@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { CheckCircle2, XCircle, Zap } from 'lucide-react';
-import { TIME_BONUS_SCORE } from '@/services/scoreService';
+import { GAME_CONFIG } from '@/data/gameConfig';
 
 interface FeedbackOverlayProps {
   show: boolean;
@@ -22,6 +22,7 @@ export function FeedbackOverlay({
   isLast,
 }: FeedbackOverlayProps) {
   if (!show) return null;
+  const TIME_BONUS_SCORE = GAME_CONFIG.TIME_BONUS_SCORE;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">

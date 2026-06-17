@@ -1,9 +1,10 @@
 import { Trophy, Target, Zap } from 'lucide-react';
 import { useGameStore } from '@/store/gameStore';
-import { TOTAL_QUESTIONS } from '@/services/questionService';
+import { GAME_CONFIG } from '@/data/gameConfig';
 
 export function ScoreBoard() {
   const { totalScore, currentQuestionIndex, bonusCount, correctCount } = useGameStore();
+  const TOTAL_QUESTIONS = GAME_CONFIG.TOTAL_QUESTIONS;
 
   return (
     <div className="grid grid-cols-3 gap-3 w-full">

@@ -1,25 +1,36 @@
 import { Question, QuestionOption, TrafficSign, SignCategory } from '@/types';
-import { trafficSigns } from '@/data/signs';
+import {
+  GAME_CONFIG,
+  getEnabledSigns,
+  getEnabledSignsByCategory,
+  getSignByDrawKey,
+  getSignsByCategory,
+} from '@/data/gameConfig';
 import { shuffleArray, randomPick, generateId } from '@/utils/shuffle';
 
-export const TOTAL_QUESTIONS = 10;
-export const OPTIONS_PER_QUESTION = 4;
+export const TOTAL_QUESTIONS = GAME_CONFIG.TOTAL_QUESTIONS;
+export const OPTIONS_PER_QUESTION = GAME_CONFIG.OPTIONS_PER_QUESTION;
 
 export function generateQuestions(): Question[] {
-  const selectedSigns = randomPick(trafficSigns, TOTAL_QUESTIONS);
+  const pool = getEnabledSigns();
+  const selectedSigns = randomPick(pool, Math.min(TOTAL_QUESTIONS, pool.length));
   return selectedSigns.map(sign => createQuestion(sign));
 }
 
 function createQuestion(sign: TrafficSign): Question {
-  const sameCategorySigns = trafficSigns.filter(
-    s => s.category === sign.category && s.id !== sign.id
+  const pool = getEnabledSigns();
+  const sameCategorySigns = getEnabledSignsByCategory(sign.category).filter(
+    s => s.id !== sign.id
   );
-  const otherCategorySigns = trafficSigns.filter(
+  const otherCategorySigns = pool.filter(
     s => s.category !== sign.category
   );
 
   const neededWrong = OPTIONS_PER_QUESTION - 1;
-  let wrongSigns = randomPick(sameCategorySigns, Math.min(2, sameCategorySigns.length, neededWrong));
+  let wrongSigns = randomPick(
+    sameCategorySigns,
+    Math.min(2, sameCategorySigns.length, neededWrong)
+  );
   const remainingNeeded = neededWrong - wrongSigns.length;
   if (remainingNeeded > 0 && otherCategorySigns.length > 0) {
     wrongSigns = [...wrongSigns, ...randomPick(otherCategorySigns, remainingNeeded)];
@@ -47,10 +58,4 @@ function createQuestion(sign: TrafficSign): Question {
   };
 }
 
-export function getSignByDrawKey(drawKey: string): TrafficSign | undefined {
-  return trafficSigns.find(s => s.drawKey === drawKey);
-}
-
-export function getSignsByCategory(category: SignCategory): TrafficSign[] {
-  return trafficSigns.filter(s => s.category === category);
-}
+export { getSignByDrawKey, getSignsByCategory };

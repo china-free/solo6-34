@@ -1,10 +1,15 @@
 import { AnswerRecord } from '@/types';
+import { GAME_CONFIG } from '@/data/gameConfig';
 
-export const BASE_SCORE = 10;
-export const TIME_BONUS_SCORE = 5;
-export const TIME_BONUS_WINDOW_MS = 3000;
+export const BASE_SCORE = GAME_CONFIG.BASE_SCORE;
+export const TIME_BONUS_SCORE = GAME_CONFIG.TIME_BONUS_SCORE;
+export const TIME_BONUS_WINDOW_MS = GAME_CONFIG.TIME_BONUS_WINDOW_MS;
 
-export function calculateScore(isCorrect: boolean, timeTaken: number, bonusWindow: number) {
+export function calculateScore(
+  isCorrect: boolean,
+  timeTaken: number,
+  bonusWindow: number = TIME_BONUS_WINDOW_MS
+) {
   if (!isCorrect) {
     return { score: 0, earnedBonus: false };
   }
@@ -18,7 +23,8 @@ export function summarizeResults(records: AnswerRecord[]) {
   const correctCount = records.filter(r => r.isCorrect).length;
   const totalScore = records.reduce((sum, r) => sum + r.earnedScore, 0);
   const bonusCount = records.filter(r => r.earnedBonus).length;
-  const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+  const accuracy =
+    totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
   return {
     totalQuestions,
     correctCount,

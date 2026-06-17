@@ -18,6 +18,8 @@ export interface TrafficSign {
   category: SignCategory;
   drawKey: string;
   description?: string;
+  enabled: boolean;
+  showOnHome: boolean;
 }
 
 export interface QuestionOption {

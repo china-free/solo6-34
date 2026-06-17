@@ -6,7 +6,8 @@ import {
   AnswerRecord,
 } from '@/types';
 import { generateQuestions } from '@/services/questionService';
-import { calculateScore, TIME_BONUS_WINDOW_MS } from '@/services/scoreService';
+import { calculateScore } from '@/services/scoreService';
+import { GAME_CONFIG } from '@/data/gameConfig';
 
 interface GameActions {
   startGame: () => void;
@@ -25,7 +26,7 @@ const initialState: GameState = {
   answers: [],
   totalScore: 0,
   questionStartTime: 0,
-  timeBonusWindow: TIME_BONUS_WINDOW_MS,
+  timeBonusWindow: GAME_CONFIG.TIME_BONUS_WINDOW_MS,
   correctCount: 0,
   bonusCount: 0,
 };

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { GameStatus } from '@/types';
-import { TOTAL_QUESTIONS } from '@/services/questionService';
+import { GAME_CONFIG } from '@/data/gameConfig';
 import { TrafficSignCanvas } from '@/components/TrafficSignCanvas';
 import { OptionButton } from '@/components/OptionButton';
 import { Timer } from '@/components/Timer';
@@ -25,6 +25,8 @@ export function GamePage() {
     resetGame,
     getCurrentQuestion,
   } = useGameStore();
+  const TOTAL_QUESTIONS = GAME_CONFIG.TOTAL_QUESTIONS;
+  const OPTIONS_PER_QUESTION = GAME_CONFIG.OPTIONS_PER_QUESTION;
 
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [bonusWindowOpen, setBonusWindowOpen] = useState(true);
@@ -95,7 +97,7 @@ export function GamePage() {
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
             <HelpCircle size={16} className="text-blue-500" />
             <span className="text-sm text-gray-600">
-              从 4 个选项中选出标志的正确含义
+              从 {OPTIONS_PER_QUESTION} 个选项中选出标志的正确含义
             </span>
           </div>
         </div>
