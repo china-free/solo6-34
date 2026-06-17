@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
-import { summarizeResults } from '@/services/scoreService';
+import { summarizeResults, TIME_BONUS_SCORE } from '@/services/scoreService';
 import { TrafficSignCanvas } from '@/components/TrafficSignCanvas';
 import {
   Trophy,
@@ -266,7 +266,7 @@ export function ResultPage() {
                     {answer.earnedBonus && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold border border-amber-200">
                         <Zap size={12} fill="currentColor" />
-                        神速 +5
+                        神速 +{TIME_BONUS_SCORE}
                       </span>
                     )}
                   </div>

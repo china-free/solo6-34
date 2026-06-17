@@ -1,13 +1,62 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { TrafficSignCanvas } from '@/components/TrafficSignCanvas';
-import { PlayCircle, BookOpen, Trophy, Zap, Target, AlertTriangle } from 'lucide-react';
+import { trafficSigns } from '@/data/signs';
+import { TOTAL_QUESTIONS, OPTIONS_PER_QUESTION } from '@/services/questionService';
+import {
+  BASE_SCORE,
+  TIME_BONUS_SCORE,
+  TIME_BONUS_WINDOW_MS,
+} from '@/services/scoreService';
+import { SignCategory } from '@/types';
+import {
+  PlayCircle,
+  BookOpen,
+  Trophy,
+  Zap,
+  Target,
+  AlertTriangle,
+} from 'lucide-react';
 
-const sampleSigns = ['stop_yield', 'speed_limit_60', 'pedestrian_crossing', 'school_zone', 'no_parking', 'go_straight'];
+const DECORATION_POSITIONS = [
+  { top: '10%', left: '8%', size: 70, className: 'animate-float-slow' },
+  { top: '18%', right: '12%', size: 80, className: 'animate-float-slower' },
+  { top: '60%', left: '5%', size: 65, className: 'animate-float-slow', delay: '1s' },
+  { bottom: '15%', right: '8%', size: 75, className: 'animate-float-slower', delay: '1.5s' },
+  { bottom: '30%', left: '15%', size: 60, className: 'animate-float-slow', delay: '0.5s' },
+  { top: '45%', right: '5%', size: 70, className: 'animate-float-slower', delay: '2s' },
+];
 
 export function HomePage() {
   const navigate = useNavigate();
   const startGame = useGameStore(s => s.startGame);
+
+  const decorationSigns = useMemo(() => {
+    const byCategory = {
+      [SignCategory.PROHIBITION]: trafficSigns.filter(s => s.category === SignCategory.PROHIBITION),
+      [SignCategory.WARNING]: trafficSigns.filter(s => s.category === SignCategory.WARNING),
+      [SignCategory.INDICATION]: trafficSigns.filter(s => s.category === SignCategory.INDICATION),
+    };
+    const selected = [
+      byCategory[SignCategory.PROHIBITION][2],
+      byCategory[SignCategory.WARNING][5],
+      byCategory[SignCategory.WARNING][0],
+      byCategory[SignCategory.INDICATION][1],
+      byCategory[SignCategory.PROHIBITION][10],
+      byCategory[SignCategory.WARNING][7],
+    ];
+    return selected.filter(Boolean);
+  }, []);
+
+  const sampleSigns = useMemo(() => {
+    return trafficSigns
+      .filter((_, i) => i % Math.ceil(trafficSigns.length / 6) === 0)
+      .slice(0, 6);
+  }, []);
+
+  const totalBankSize = trafficSigns.length;
+  const bonusSeconds = TIME_BONUS_WINDOW_MS / 1000;
 
   const handleStart = () => {
     startGame();
@@ -23,24 +72,24 @@ export function HomePage() {
       </div>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[8%] animate-float-slow opacity-70">
-          <TrafficSignCanvas drawKey="no_parking" size={70} animated={false} />
-        </div>
-        <div className="absolute top-[18%] right-[12%] animate-float-slower opacity-70">
-          <TrafficSignCanvas drawKey="school_zone" size={80} animated={false} />
-        </div>
-        <div className="absolute top-[60%] left-[5%] animate-float-slow opacity-70" style={{ animationDelay: '1s' }}>
-          <TrafficSignCanvas drawKey="crossroads" size={65} animated={false} />
-        </div>
-        <div className="absolute bottom-[15%] right-[8%] animate-float-slower opacity-70" style={{ animationDelay: '1.5s' }}>
-          <TrafficSignCanvas drawKey="turn_left" size={75} animated={false} />
-        </div>
-        <div className="absolute bottom-[30%] left-[15%] animate-float-slow opacity-60" style={{ animationDelay: '0.5s' }}>
-          <TrafficSignCanvas drawKey="speed_limit_60" size={60} animated={false} />
-        </div>
-        <div className="absolute top-[45%] right-[5%] animate-float-slower opacity-60" style={{ animationDelay: '2s' }}>
-          <TrafficSignCanvas drawKey="watch_children" size={70} animated={false} />
-        </div>
+        {decorationSigns.map((sign, i) => {
+          const pos = DECORATION_POSITIONS[i] || DECORATION_POSITIONS[0];
+          return (
+            <div
+              key={sign.id}
+              className={`absolute ${pos.className} opacity-70`}
+              style={{
+                top: pos.top,
+                right: pos.right,
+                bottom: pos.bottom,
+                left: pos.left,
+                animationDelay: pos.delay || '0s',
+              }}
+            >
+              <TrafficSignCanvas drawKey={sign.drawKey} size={pos.size} animated={false} />
+            </div>
+          );
+        })}
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-12">
@@ -79,9 +128,15 @@ export function HomePage() {
                   1
                 </div>
                 <div>
-                  <p className="font-bold text-blue-900 mb-1">共 10 道题</p>
+                  <p className="font-bold text-blue-900 mb-1">
+                    共 {TOTAL_QUESTIONS} 道题
+                  </p>
                   <p className="text-blue-700/80 text-sm leading-relaxed">
-                    从 <span className="font-bold text-blue-800">30 个</span> 常见交通标志题库中随机抽取
+                    从{' '}
+                    <span className="font-bold text-blue-800">
+                      {totalBankSize} 个
+                    </span>{' '}
+                    常见交通标志题库中随机抽取
                   </p>
                 </div>
               </div>
@@ -93,7 +148,11 @@ export function HomePage() {
                 <div>
                   <p className="font-bold text-green-900 mb-1">答对得分</p>
                   <p className="text-green-700/80 text-sm leading-relaxed">
-                    每题答对 <span className="font-bold text-green-800 text-base">+10 分</span>，答错不扣分
+                    每题答对{' '}
+                    <span className="font-bold text-green-800 text-base">
+                      +{BASE_SCORE} 分
+                    </span>
+                    ，答错不扣分
                   </p>
                 </div>
               </div>
@@ -105,7 +164,14 @@ export function HomePage() {
                 <div>
                   <p className="font-bold text-amber-900 mb-1">神速答题奖励</p>
                   <p className="text-amber-700/80 text-sm leading-relaxed">
-                    每题 <span className="font-bold text-amber-800 text-base">3 秒内</span> 作答，额外 <span className="font-bold text-amber-800 text-base">+5 分</span>
+                    每题{' '}
+                    <span className="font-bold text-amber-800 text-base">
+                      {bonusSeconds} 秒内
+                    </span>{' '}
+                    作答，额外{' '}
+                    <span className="font-bold text-amber-800 text-base">
+                      +{TIME_BONUS_SCORE} 分
+                    </span>
                   </p>
                 </div>
               </div>
@@ -115,9 +181,11 @@ export function HomePage() {
                   <Target size={20} />
                 </div>
                 <div>
-                  <p className="font-bold text-rose-900 mb-1">4 选 1</p>
+                  <p className="font-bold text-rose-900 mb-1">
+                    {OPTIONS_PER_QUESTION} 选 1
+                  </p>
                   <p className="text-rose-700/80 text-sm leading-relaxed">
-                    每题显示一个标志，从 4 个选项中选出正确含义
+                    每题显示一个标志，从 {OPTIONS_PER_QUESTION} 个选项中选出正确含义
                   </p>
                 </div>
               </div>
@@ -137,9 +205,9 @@ export function HomePage() {
           </button>
 
           <div className="mt-8 grid grid-cols-6 gap-3 opacity-60">
-            {sampleSigns.map((key, i) => (
-              <div key={i} className="aspect-square">
-                <TrafficSignCanvas drawKey={key} size={56} animated={false} />
+            {sampleSigns.map(sign => (
+              <div key={sign.id} className="aspect-square">
+                <TrafficSignCanvas drawKey={sign.drawKey} size={56} animated={false} />
               </div>
             ))}
           </div>

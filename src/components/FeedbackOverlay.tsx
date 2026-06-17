@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { CheckCircle2, XCircle, Zap } from 'lucide-react';
+import { TIME_BONUS_SCORE } from '@/services/scoreService';
 
 interface FeedbackOverlayProps {
   show: boolean;
@@ -85,7 +86,7 @@ export function FeedbackOverlay({
             <div className="flex items-center gap-2 mb-5 px-5 py-2.5 bg-amber-100 rounded-full border-2 border-amber-300 animate-pulse">
               <Zap size={20} className="text-amber-600" fill="currentColor" />
               <span className="font-bold text-amber-700">
-                神速答题！额外 +5 分奖励
+                神速答题！额外 +{TIME_BONUS_SCORE} 分奖励
               </span>
             </div>
           )}
